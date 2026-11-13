@@ -1,0 +1,13 @@
+[server]
+headless = true
+# Recharge la page toute seule dès que app.py est enregistré (par exemple par OpenCode).
+runOnSave = true
+# Détecte les modifications de app.py en vérifiant régulièrement : plus fiable que les événements du système de fichiers dans Codespaces.
+fileWatcherType = "poll"
+port = 8804
+
+[client]
+toolbarMode = "minimal"
+
+[browser]
+gatherUsageStats = false

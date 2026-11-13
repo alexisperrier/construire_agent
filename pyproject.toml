@@ -1,0 +1,14 @@
+[project]
+name = "construire-agent"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "ollama",
+    "streamlit>=1.60",
+    "tavily-python",
+    "mcp>=2",
+    "python-dotenv>=1.2.4",
+]
+
+[tool.uv]
+package = false
