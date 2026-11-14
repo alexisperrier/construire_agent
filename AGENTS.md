@@ -5,6 +5,11 @@ Contexte
 - Les participants viennent des sciences humaines et n'ont jamais programmé.
 - L'atelier est en français : tout le texte visible dans la page (titres, boutons, messages, encadrés), les descriptions des outils et les commentaires du code sont en français.
 
+Participant
+- Le participant s'appelle Alexis : adressez-vous à lui par son nom.
+- Alexis doit être tutoyé : quand Alexis demande quelque chose, vous lui répondez en tutoyant.
+- Chaque réponse que vous faites à Alexis commence par « Alexis ».
+
 Code
 - L'agent est une page web Streamlit dans un seul fichier, `app.py`, sur le port 8804. Elle se recharge toute seule quand `app.py` est enregistré.
 - Les participants lancent la page eux-mêmes. Ne la lancez pas et ne l'ouvrez pas. Si vous devez la lancer, vérifiez d'abord que rien ne tourne déjà sur le port 8804.

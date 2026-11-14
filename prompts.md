@@ -31,16 +31,15 @@ Puis, dans OpenCode, demandez de vérifier que les deux clés d'API, OpenRouter 
 
 ## Partie 1 : la mémoire
 
-### Étape 1 : chat avec historique
+### Étape 1 : chat sans mémoire
 
 Le modèle est une fonction : du texte en entrée, du texte en sortie. La mémoire pendant la session, c'est le harnais qui renvoie toute la conversation à chaque tour.
 
 ```markdown
-Transforme app.py en page de chat :
-je tape un message, l'agent répond, toute la conversation reste affichée sur la page.
-Envoie toute la conversation au modèle à chaque fois, pour qu'il se souvienne de ce qui a été dit avant.
+Transforme l'application en page de chat : je tape un message, l'agent répond, toute la conversation reste affichée sur la page.
 Affiche la réponse au fur et à mesure qu'elle s'écrit.
 Dans la barre latérale, affiche :
+- un bouton pour creer une nouvelle conversation
 - un menu pour choisir le modèle Ollama installé (seulement llama3.2:3b pour l'instant),
 - combien de messages sont envoyés au modèle, et leur taille approximative en tokens.
 ```
@@ -59,7 +58,24 @@ Puis rechargez la page : l'agent ne connaît plus votre nom.
 - Essayez d'évaluer son « intelligence » : « Combien de r y a-t-il dans le mot strawberry ? » ou « Je veux laver ma voiture. La station de lavage est à 50 m. Est-ce que j'y vais à pied ou en voiture ? »
 
 
-### Étape 2 : prompt système
+### Étape 2 : mémoire persistante
+
+La mémoire d'une session à l'autre est un fichier que le harnais lit et écrit, automatiquement.
+
+```markdown
+Donne à l'agent une mémoire qui survit au rechargement de la page, stockée dans le fichier memory.md.
+Après chaque réponse, ajoute l'échange à memory.md, mot pour mot : "Utilisateur : " suivi du message, puis "Agent : " suivi de la réponse, puis une ligne vide.
+Ne résume pas.
+Quand la page est ouverte ou rechargée, lis memory.md une fois et envoie son contenu au modèle comme message système, avant la conversation, sous "Conversations précédentes :".
+Ne l'affiche pas dans la discussion.
+Dans la barre latérale, affiche la taille de memory.md en tokens, à côté de la taille de la conversation.
+```
+
+**Test** : « Bonjour, je m'appelle Alexis, je suis fan de Star Trek et je préfère les réponses courtes. », rechargez la page, puis « Que sais-tu de moi ? ». Ouvrez memory.md : du texte brut que n'importe qui peut lire ou modifier. Discutez au fil de plusieurs rechargements et regardez la barre latérale : chaque échange passé est renvoyé avec chaque message, donc le contexte ne fait que grandir.
+
+Vous pouvez inspecter le contenu du fichier memory.md et le voir grossir.
+
+### Étape 3 : prompt système
 
 Une partie du rôle du harnais est de donner à l'agent un ensemble d'instructions, transmises par un prompt système.
 Ici, le prompt système est un fichier markdown chargé avant chaque session.
@@ -74,9 +90,11 @@ Un petit prompt système est déjà disponible dans le fichier system.md pour qu
 Commençons par modifier l'agent pour qu'il lise le prompt système au début de chaque session.
 
 ```markdown
-Utilise le texte de system.md comme prompt système : le modèle le reçoit en premier, avant la conversation, à chaque fois.
-Ne l'affiche pas dans le chat.
-Dans la barre latérale, affiche le contenu de system.md dans une zone de texte que l'utilisateur peut modifier, avec un bouton Enregistrer.
+Utilise le texte de system.md comme prompt système.
+Le modèle reçoit un seul message système, au début de chaque appel : d'abord le contenu de system.md, puis la mémoire sous "Conversations précédentes :", puis la conversation.
+Ne mélange pas les deux fichiers : n'écris jamais la mémoire dans system.md, ni le prompt système dans memory.md.
+Ne l'affiche pas dans la discussion.
+Dans la barre latérale, affiche le contenu de system.md dans une zone de texte modifiable, avec un bouton Enregistrer.
 Enregistrer écrit le texte dans system.md.
 Garde la conversation : le message suivant utilise le nouveau prompt système.
 La zone de texte affiche toujours le contenu actuel de system.md, même si le fichier a été modifié en dehors de la page.
@@ -88,7 +106,7 @@ La zone de texte affiche toujours le contenu actuel de system.md, même si le fi
 Observez comment l'agent répond. Respecte-t-il vos instructions ?
 
 
-### Étape 2 bis
+### Étape 3 bis
 
 Le modèle Llama 3.2 est assez bavard.
 Essayons un autre modèle : qwen2.5:3b.
@@ -104,23 +122,7 @@ Si le modèle n'apparaît pas dans le menu des modèles de la barre latérale, �
 Puis sélectionnez le modèle `qwen2.5:3b` et discutez avec l'agent. Qu'observez-vous ?
 
 
-### Étape 3 : mémoire persistante
 
-La mémoire d'une session à l'autre est un fichier que le harnais lit et écrit, automatiquement.
-
-```markdown
-Donne à l'agent une mémoire qui dure après le rechargement de la page, enregistrée dans le fichier memory.md.
-Après chaque réponse, ajoute l'échange à memory.md, mot pour mot : "Utilisateur : " suivi du message, puis "Agent : " suivi de la réponse, puis une ligne vide.
-Ne résume pas.
-
-Quand la page est ouverte ou rechargée, lis memory.md une fois et ajoute son contenu après le prompt système, sous "Conversations précédentes :".
-Ne l'écris pas dans system.md.
-Dans la barre latérale, affiche la taille de memory.md en tokens, à côté de la taille de la conversation.
-```
-
-**Test** : « Bonjour, je m'appelle Alexis, je suis fan de Star Trek et je préfère les réponses courtes. », rechargez la page, puis « Que sais-tu de moi ? ». Ouvrez memory.md : du texte brut que n'importe qui peut lire ou modifier. Discutez au fil de plusieurs rechargements et regardez la barre latérale : chaque échange passé est renvoyé avec chaque message, donc le contexte ne fait que grandir.
-
-Vous pouvez inspecter le contenu du fichier memory.md et le voir grossir.
 
 ## Partie 2 : les outils
 
